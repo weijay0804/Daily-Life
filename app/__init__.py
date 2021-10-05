@@ -6,6 +6,10 @@
 
     created by : jay
 
+    last update date : 2021/10/05
+
+    update by : jay
+
 '''
 
 from flask import Flask, config
@@ -25,5 +29,8 @@ def create_app(config_name : str) -> Flask:
     config[config_name].init_app(app)
 
     db.init_app(app)
+
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
 
     return app
