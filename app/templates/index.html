@@ -5,6 +5,9 @@
     created date : 2021/10/05
     created by : jay
 
+    last update date : 2021/10/05
+    update by : jay
+
 -->
 
 
@@ -48,5 +51,10 @@
           </div>
         </div>
     </nav>
+    <div class="page_content">
+        {% if user %} 
+            <h1>Hello, {{ user }}</h1>
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -3,11 +3,9 @@
     daily life 主程式
 
     created date : 2021/10/05
-
     created by : jay
 
     last update date : 2021/10/05
-
     update by : jay
 
 '''

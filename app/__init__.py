@@ -3,11 +3,9 @@
     app 初始化建構式
 
     created date : 2021/10/05
-
     created by : jay
 
     last update date : 2021/10/05
-
     update by : jay
 
 '''
@@ -34,5 +32,8 @@ def create_app(config_name : str) -> Flask:
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    from .auth import auth as authblueprint
+    app.register_blueprint(authblueprint, url_prefix = '/auth')
 
     return app

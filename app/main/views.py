@@ -3,16 +3,16 @@
     主視圖程式
 
     created date : 2021/10/05
-
     created by : jay
 
 '''
 
-from flask import render_template
+from flask import render_template, session
 
 # ----- 自訂函式 -----
 from . import main
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    user = session.get('user') if session['user'] else ''
+    return render_template('index.html', user = user)
