@@ -1,0 +1,9 @@
+# 虛擬環境
+Pipfile
+Pipfile.lock
+
+# python 緩存
+__pycache__
+
+# 環境變數
+.env
