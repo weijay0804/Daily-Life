@@ -15,11 +15,13 @@
 from flask import Flask, config
 from flask_sqlalchemy import SQLAlchemy
 
+
 # ----- 自訂函式 -----
 from config import config
 
 # 初始化套件
 db = SQLAlchemy()
+
 
 def create_app(config_name : str) -> Flask:
     ''' 根據不同的設定參數，產生不同的 Flask 實例 '''
