@@ -14,5 +14,5 @@ from . import main
 
 @main.route('/')
 def index():
-    user = session.get('user') if session['user'] else ''
-    return render_template('index.html', user = user)
+    user = session.get('user') if session.get('user') else ''
+    return render_template('main/index.html', user = user)
