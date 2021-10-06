@@ -28,7 +28,9 @@ class BasicTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_app_exist(self) -> None:
+        ''' 測試 app 是否存在 '''
         self.assertTrue(current_app is not None)
 
     def test_app_is_test(self) -> None:
+        ''' 測試 app 是否在 test 環境 '''
         self.assertTrue(current_app.config['TESTING'])
