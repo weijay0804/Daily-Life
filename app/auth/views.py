@@ -7,7 +7,7 @@
 
 '''
 
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, flash
 
 # ----- 自訂函式 -----
 from . import auth
@@ -19,6 +19,7 @@ def register():
     ''' 使用者註冊 '''
     if request.method == 'POST':
         print('POST')
+        flash('註冊成功')
         return redirect(url_for('main.index'))
     return render_template('auth/register.html')
 

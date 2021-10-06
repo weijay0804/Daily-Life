@@ -50,6 +50,13 @@
         </div>
     </nav>
     <div class="container">
+        {% for message in get_flashed_messages() %} 
+            <div class="alert alert-primary" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message }}
+            </div>
+        {% endfor %} 
+
         {% block page_content %} 
         {% endblock %}
     </div>
