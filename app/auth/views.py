@@ -14,10 +14,13 @@ from . import auth
 from .. import db
 from ..model import User
 
-@auth.route('/register')
+@auth.route('/register', methods = ['GET', 'POST'])
 def register():
     ''' 使用者註冊 '''
-    pass
+    if request.method == 'POST':
+        print('POST')
+        return redirect(url_for('main.index'))
+    return render_template('auth/register.html')
 
 @auth.route('/login')
 def login():
