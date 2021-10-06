@@ -13,18 +13,17 @@
 
 {% block page_content %} 
     <div class="page-header">
-        <h1> Register </h1>
+        <h1> 註冊 </h1>
     </div>
     <div class="page">
         <form class="row g-3" action="{{ url_for('auth.register') }}" method="POST">
             <div class="col-md-4">
               <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" required>
+              <input type="text" class="form-control" id="username" name="username" required>
             </div>
             <div class="col-12">
               <button class="btn btn-primary" type="submit">送出</button>
             </div>
         </form>
-        
     </div>
 {% endblock %}

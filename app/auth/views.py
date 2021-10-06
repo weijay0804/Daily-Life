@@ -18,7 +18,14 @@ from ..model import User
 def register():
     ''' 使用者註冊 '''
     if request.method == 'POST':
-        print('POST')
+        username = request.form['username']
+        user = User.query.filter_by(username = username).first()
+        if user:
+            flash('使用者名稱已存在')
+            return redirect(url_for('auth.register'))
+        user = User(username = username)
+        db.session.add(user)
+        db.session.commit()
         flash('註冊成功')
         return redirect(url_for('main.index'))
     return render_template('auth/register.html')
