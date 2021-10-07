@@ -5,15 +5,20 @@
     created date : 2021/10/05
     created by : jay
 
+    last update date : 2021/10/07
+    update by : jay
+
 '''
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 # ----- 自訂函式 -----
 from app import db
+from . import login_manager
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     ''' 使用者資料庫模型 '''
 
     __tablename__ = 'users'
@@ -40,3 +45,8 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return '<User %r>' % self.username
+
+@login_manager.user_loader
+def load_user(user_id : str) -> User:
+    ''' 取得使用者 '''
+    return User.query.get(int(user_id))

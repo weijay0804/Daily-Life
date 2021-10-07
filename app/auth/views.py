@@ -11,6 +11,7 @@
 '''
 
 from flask import render_template, request, redirect, url_for, session, flash
+from flask_login import login_user
 
 # ----- 自訂函式 -----
 from . import auth
@@ -45,13 +46,35 @@ def register():
         db.session.commit()
 
         flash('註冊成功')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
 
-@auth.route('/login')
+@auth.route('/login', methods = ['GET', 'POST'])
 def login():
     ''' 使用者登入 '''
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        remember_me = request.form.get('remember_me')
+
+        is_remember_me = False if remember_me == None else True # 判斷 (記得我) 是否勾選
+
+        user = User.query.filter_by(email = email).first()
+        
+        if user is not None and user.verify_password(password):
+            login_user(user, is_remember_me)
+            next = request.args.get('next')
+
+            if next is None or not next.startswith('/'):
+                next = url_for('main.index')
+            
+            flash('登入成功')
+            return redirect(next)
+
+        flash('錯誤的 email 或 密碼')
+
     return render_template('auth/login.html')
 
 @auth.route('/logout')
