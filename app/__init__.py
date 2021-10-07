@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/05
+    last update date : 2021/10/07
     update by : jay
 
 '''
@@ -13,6 +13,7 @@
 from flask import Flask, config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 
 
 # ----- 自訂函式 -----
@@ -20,6 +21,7 @@ from config import config
 
 # 初始化套件
 db = SQLAlchemy()
+csrf = CSRFProtect()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
@@ -32,6 +34,7 @@ def create_app(config_name : str) -> Flask:
     config[config_name].init_app(app)
 
     db.init_app(app)
+    csrf.init_app(app)
     login_manager.init_app(app)
 
     from .main import main as main_blueprint

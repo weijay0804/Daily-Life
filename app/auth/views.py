@@ -10,7 +10,7 @@
 
 '''
 
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, session, url_for, flash
 from flask_login import login_user, logout_user, login_required
 
 # ----- 自訂函式 -----
@@ -47,6 +47,7 @@ def register():
 
         flash('註冊成功')
         return redirect(url_for('auth.login'))
+    
 
     return render_template('auth/register.html')
 
@@ -81,7 +82,7 @@ def login():
 @login_required
 def logout():
     ''' 使用者登出 '''
-    
+
     logout_user()
     flash('你已經登出')
     return redirect(url_for('main.index'))
