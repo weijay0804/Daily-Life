@@ -10,8 +10,8 @@
 
 '''
 
-from flask import render_template, request, redirect, url_for, session, flash
-from flask_login import login_user
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user, login_required
 
 # ----- 自訂函式 -----
 from . import auth
@@ -78,6 +78,10 @@ def login():
     return render_template('auth/login.html')
 
 @auth.route('/logout')
+@login_required
 def logout():
     ''' 使用者登出 '''
-    pass
+    
+    logout_user()
+    flash('你已經登出')
+    return redirect(url_for('main.index'))
