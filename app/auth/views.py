@@ -48,11 +48,11 @@ def register():
         return redirect(url_for('main.index'))
 
     return render_template('auth/register.html')
-    
+
 @auth.route('/login')
 def login():
     ''' 使用者登入 '''
-    pass
+    return render_template('auth/login.html')
 
 @auth.route('/logout')
 def logout():
