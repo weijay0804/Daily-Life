@@ -5,13 +5,13 @@
     created date : 2021/10/05
     created by : jay
 
-    last update : 2021/10/07
+    last update : 2021/10/15
     update by : jay
 
 '''
 
 from flask import render_template, request, redirect, session, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 
 # ----- 自訂函式 -----
 from . import auth
@@ -86,3 +86,28 @@ def logout():
     logout_user()
     flash('你已經登出')
     return redirect(url_for('main.index'))
+
+@auth.route('/change_password', methods = ['GET', 'POST'])
+@login_required
+def change_password():
+    ''' 修改使用者密碼 '''
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        new_password1 = request.form.get('new_password1')
+        new_password2 = request.form.get('new_password2')
+        user = User.query.get_or_404(current_user.id)
+
+        if not user.verify_password(old_password):
+            flash('密碼錯誤')
+            return redirect(url_for('auth.change_password'))
+        if new_password1 != new_password2:
+            flash('密碼必須相同')
+            return redirect(url_for('auth.change_password'))
+        user.password = new_password1
+        db.session.commit()
+        flash('更改成功')
+        return redirect(url_for('main.index'))
+    return render_template('auth/change_password.html')
+        
+        
+        
