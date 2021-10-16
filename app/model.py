@@ -12,6 +12,7 @@
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from flask import current_app
 
 # ----- 自訂函式 -----
 from app import db
@@ -108,6 +109,14 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(128), unique = True, index = True)
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email == current_app.config['DAILY_LIFE_ADMIN']:
+                self.role = Role.query.filter_by(name = 'Administrator').first()
+            else:
+                self.role = Role.query.filter_by(default = True).first()
 
     @property
     def password(self) -> None:
