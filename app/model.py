@@ -43,6 +43,32 @@ class Role(db.Model):
         if self.permissions is None:
             self.permissions = 0
 
+    @staticmethod
+    def insert_roles() -> None:
+        ''' 新增 使用者角色 到資料庫中 '''
+
+        roles = {
+            'User' : [Permission.FOLLOW, Permission.WRITE, Permission.COMMENT],
+            'Moderator' : [Permission.FOLLOW, Permission.WRITE, Permission.COMMENT, Permission.MODERATE],
+            'Administrator' : [Permission.FOLLOW, Permission.WRITE, Permission.COMMENT, Permission.MODERATE, Permission.ADMIN],
+        }
+
+        default_role = "User"
+
+        for r in roles:
+            role = Role.query.filter_by(name = r).first()
+            if role is None:
+                role = Role(name = r)   # 新增使用者角色到資料庫
+            role.reset_permission()     # 出始化權限
+
+            for perm in roles[r]:
+                role.add_permission(perm)   # 增加權限到特定的使用者角色
+
+            role.default = (role.name == default_role) 
+
+            db.session.add(role)
+        db.session.commit()
+
     def has_permission(self, perm : Permission) -> bool:
         ''' 檢查使用者有沒有特定權限 '''
 
