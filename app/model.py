@@ -10,13 +10,21 @@
 
 '''
 
-from sqlalchemy.orm import backref
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 # ----- 自訂函式 -----
 from app import db
 from . import login_manager
+
+class Permission:
+    ''' 權限常數 '''
+
+    FOLLOW = 1
+    COMMENT = 2
+    WRITE = 4
+    MODERATE = 8
+    ADMIN = 16
 
 
 class Role(db.Model):
@@ -31,9 +39,34 @@ class Role(db.Model):
     users = db.relationship('User', backref = 'role', lazy = 'dynamic')
 
     def __init__(self, **kwargs):
-        super(Role, self).__init__(**kwargs)
+        super(Role, self).__init__(**kwargs) # 繼承 db.Model 中的 __init__ 方法
         if self.permissions is None:
             self.permissions = 0
+
+    def has_permission(self, perm : Permission) -> bool:
+        ''' 檢查使用者有沒有特定權限 '''
+
+        return (self.permissions & perm) == perm    # if user.permission = FOLLOW + WRITE = 3
+                                                    # has_permisson(FOLLW) -> 3 & 1 = 1   1 = 1 true
+                                                    # has_permission(ADMIN) -> 3 & 16 = 0  0 = 16 false
+
+    def add_permission(self, perm : Permission) -> None:
+        ''' 新增特定權限給使用者 '''
+
+        if not self.has_permission(perm):
+            self.permissions += perm
+
+    def remove_permission(self, perm : Permission) -> None:
+        ''' 從使用者移除特定權限 '''
+
+        if self.has_permission(perm):
+            self.permissions -= perm
+
+    def reset_permission(self) -> None:
+        ''' 重新設定使用者權限 '''
+
+        self.permissions = 0
+        
 
     def __repr__(self) -> str:
         return '<Role %r>' % self.name
@@ -52,7 +85,7 @@ class User(db.Model, UserMixin):
 
     @property
     def password(self) -> None:
-        ''' 讓外不無法直接讀取密碼 '''
+        ''' 讓外部無法直接讀取密碼 '''
         raise AttributeError('Password is not a readablb attribute.')
 
     @password.setter
