@@ -5,13 +5,13 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/16
+    last update date : 2021/10/20
     update by : jay
 
 '''
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, AnonymousUserMixin
 from flask import current_app
 
 # ----- 自訂函式 -----
@@ -37,7 +37,8 @@ class Role(db.Model):
     name = db.Column(db.String(64), unique = True)
     default = db.Column(db.Boolean, default = False, index = True)
     permissions = db.Column(db.Integer)
-    users = db.relationship('User', backref = 'role', lazy = 'dynamic')
+
+    users = db.relationship('User', backref = 'role', lazy = 'dynamic') # 一對多的 ( 一 )
 
     def __init__(self, **kwargs):
         super(Role, self).__init__(**kwargs) # 繼承 db.Model 中的 __init__ 方法
@@ -60,7 +61,7 @@ class Role(db.Model):
             role = Role.query.filter_by(name = r).first()
             if role is None:
                 role = Role(name = r)   # 新增使用者角色到資料庫
-            role.reset_permission()     # 出始化權限
+            role.reset_permission()     # 初始化權限
 
             for perm in roles[r]:
                 role.add_permission(perm)   # 增加權限到特定的使用者角色
@@ -108,7 +109,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique = True, index = True)
     email = db.Column(db.String(128), unique = True, index = True)
     password_hash = db.Column(db.String(128))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -132,9 +134,34 @@ class User(db.Model, UserMixin):
         ''' 檢查密碼是否正確 '''
         return check_password_hash(self.password_hash, password)
 
+    def can(self, perm : Permission) -> bool:
+        ''' 檢查使用者是否有特定的權限 '''
+
+        return self.role is not None and self.role.has_permission(perm)
+
+    def is_administrator(self) -> bool:
+        ''' 檢查使用者是否是管理員 '''
+
+        return self.can(Permission.ADMIN)
+
 
     def __repr__(self) -> str:
         return '<User %r>' % self.username
+
+class AnonymousUser(AnonymousUserMixin):
+    ''' 匿名用戶 '''
+
+    def can(self, perm : Permission) -> bool:
+        ''' 匿名用戶沒有權限 一律回傳 False '''
+
+        return False
+
+    def is_administrator(self) -> bool:
+        ''' 一律回傳 False '''
+
+        return False
+
+login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader
 def load_user(user_id : str) -> User:

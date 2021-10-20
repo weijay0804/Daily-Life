@@ -5,13 +5,16 @@
     created date : 2021/10/06
     created by : jay
 
+    update date : 2021/10/20
+    update by : jay
+
 '''
 
 import unittest
 
 # ----- 自訂函式 -----
 from app import create_app, db
-from app.model import User
+from app.model import Permission, User, Role, AnonymousUser
 
 class UserModelTestCase(unittest.TestCase):
     ''' User 模組單元測試'''
@@ -21,6 +24,7 @@ class UserModelTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        Role.insert_roles()
 
     def tearDown(self) -> None:
         db.session.remove()
@@ -49,3 +53,22 @@ class UserModelTestCase(unittest.TestCase):
         u1 = User(username = 'test', password = 'cat')
         u2 = User(username = 'test2', password = 'cat')
         self.assertFalse(u1.password_hash == u2.password_hash)
+
+    def test_user_role(self) -> None:
+        ''' 測試 使用者權限函式 '''
+        u = User(username = 'test', email = 'test@gamil.com', password = 'test')
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
+
+    def test_AnonymousUser(self) -> None:
+        u = AnonymousUser()
+        self.assertFalse(u.can(Permission.FOLLOW))
+        self.assertFalse(u.can(Permission.COMMENT))
+        self.assertFalse(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))
+        
+
