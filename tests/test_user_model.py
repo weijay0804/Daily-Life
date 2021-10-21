@@ -71,5 +71,17 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u.can(Permission.WRITE))
         self.assertFalse(u.can(Permission.MODERATE))
         self.assertFalse(u.can(Permission.ADMIN))
+
+    def test_ping(self) -> None:
+        ''' 測試 更新使用者登入時間函式 '''
+        import time
+        u = User(username = 'test', password = 'test', email = 'test@gamil.com')
+        db.session.add(u)
+        db.session.commit()
+        last_seen_berfor = u.last_seen
+        time.sleep(2)
+        u.ping()
+        self.assertTrue(u.last_seen > last_seen_berfor)
+
         
 

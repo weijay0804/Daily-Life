@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/20
+    last update date : 2021/10/21
     update by : jay
 
 '''
@@ -149,6 +149,12 @@ class User(db.Model, UserMixin):
         ''' 檢查使用者是否是管理員 '''
 
         return self.can(Permission.ADMIN)
+
+    def ping(self) -> None:
+        ''' 更新 使用者登入日期 '''
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
 
 
     def __repr__(self) -> str:

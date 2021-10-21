@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update : 2021/10/15
+    last update : 2021/10/21
     update by : jay
 
 '''
@@ -82,6 +82,8 @@ def login():
 @login_required
 def logout():
     ''' 使用者登出 '''
+
+    current_user.ping() # 更新使用者 last_seen 時間
 
     logout_user()
     flash('你已經登出')
