@@ -5,7 +5,7 @@
     created date : 2021/10/06
     created by : jay
 
-    update date : 2021/10/20
+    update date : 2021/10/21
     update by : jay
 
 '''
@@ -64,6 +64,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u.can(Permission.ADMIN))
 
     def test_AnonymousUser(self) -> None:
+        ''' 測試 匿名用戶權限 '''
         u = AnonymousUser()
         self.assertFalse(u.can(Permission.FOLLOW))
         self.assertFalse(u.can(Permission.COMMENT))
