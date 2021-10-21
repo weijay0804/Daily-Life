@@ -13,6 +13,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from flask import current_app
+from datetime import datetime
 
 # ----- 自訂函式 -----
 from app import db
@@ -109,6 +110,11 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique = True, index = True)
     email = db.Column(db.String(128), unique = True, index = True)
     password_hash = db.Column(db.String(128))
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text())
+    member_since = db.Column(db.DateTime(), default = datetime.utcnow)  # 註冊日期
+    last_seen = db.Column(db.DateTime(), default = datetime.utcnow)     # 上次登入日期
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
 
