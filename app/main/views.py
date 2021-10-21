@@ -17,8 +17,9 @@ from datetime import datetime
 
 # ----- 自訂函式 -----
 from . import main
-from ..model import User
+from ..model import User, Role
 from .. import db
+from ..decorators import admin_required
 
 
 @main.route('/')
@@ -56,4 +57,38 @@ def edit_profile():
 
     return render_template('main/edit_profile.html', **form_datas)
 
+
+@main.route('/edit-profile/<int:id>', methods = ['GET', 'POST'])
+@login_required
+@admin_required
+def edit_profile_admin(id):
+    ''' 管理員編輯個人資料頁面 '''
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        form = request.form
+        user.email = form.get('email')
+        user.username = form.get('username')
+        if int(form.get('role')):
+            user.role = Role.query.get(int(form.get('role')))
+
+        print(form.get('role'))
+        print(bool(int(form.get('role'))))
+        user.name = form.get('name')
+        user.location = form.get('location')
+        user.about_me = form.get('about_me')
+        db.session.add(user)
+        db.session.commit()
+        flash('修改成功')
+        return redirect(url_for('main.user', username = user.username))
     
+    roles = [(role.id, role.name) for role in Role.query.order_by(Role.name).all()]
+    form_datas = {
+        'form_email' : user.email,
+        'form_username' : user.username,
+        'form_name' : user.name if user.name else '',
+        'form_location' : user.location if user.location else '',
+        'form_about_me' : user.about_me if user.about_me else '',
+        'roles' : roles
+        }
+
+    return render_template('main/edit_profile_admin.html', user = user, **form_datas)

@@ -44,5 +44,11 @@
         {% if current_user == user %}
             <a href="{{ url_for('main.edit_profile') }}">編輯個人資料</a>
         {% endif %}
+
+        {% if current_user.is_administrator() %} 
+            <a href="{{ url_for('main.edit_profile_admin', id = user.id ) }}">
+                編輯使用者資訊 [Admin]
+            </a>
+        {% endif %}
     </div>
 {% endblock %}
