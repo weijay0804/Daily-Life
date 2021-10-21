@@ -1,0 +1,44 @@
+<!--
+
+    使用者個人資訊頁面
+    
+    created date : 2021/10/21
+    created by : jay
+
+
+-->
+
+{% extends 'basic.html' %} 
+
+{% block title %} User Info {% endblock %} 
+
+{% block page_content %} 
+    <div class="page-header">
+        <h1> {{ user.username }} 的個人資料</h1>
+
+        {% if user.name or user.location %} 
+            <p>
+                {% if user.name %} 
+                    {{ user.name }}
+                {% endif %}
+                {% if user.location %} 
+                    來自 <a href="http://maps.google.com/?q={{ user.location }}"> {{ user.location }}</a>
+                {% endif %} 
+            </p> 
+        {% endif %}
+        {% if current_user.is_administrator() %} 
+                <p>
+                    <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                </p>
+        {% endif %}
+        {% if user.about_me %} 
+            <p>
+                {{ user.about.me }}
+            </p>
+        {% endif %}
+        <p>
+            從 {{ moment(user.member_since).format('LL') }} 加入 <br>
+            上次看到你是 {{ moment(user.last_seen).fromTime(now) }}
+        </p>
+    </div>
+{% endblock %}

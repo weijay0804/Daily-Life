@@ -31,11 +31,11 @@
             <img src="{{ url_for('static', filename = 'images/nav_icon.png') }}" alt="" width="35" height="30" class="d-inline-block align-text-top">
             Daily Life
           </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               {% if current_user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('auth.logout')}}">登出</a>
@@ -43,8 +43,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('auth.change_password')}}">更改密碼</a>
               </li>
-              {% else %} 
               <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.user', username = current_user.username)}}">個人資料</a>
+              </li>
+              {% else %} 
+              <li class="nav-item navbar-right">
                 <a class="nav-link" href="{{ url_for('auth.login')}}">登入</a>
               </li>
               {% endif %}
@@ -58,6 +61,7 @@
           </div>
         </div>
     </nav>
+
     <div class="container">
         {% for message in get_flashed_messages() %} 
             <div class="alert alert-primary" role="alert">
@@ -70,7 +74,9 @@
         {% endblock %}
     </div>
 
-    {% block script %} 
+    {% block script %}
+      {{ moment.include_moment() }} 
+      {{ moment.locale(auto_detect=True) }}
     {% endblock %}
 
     
