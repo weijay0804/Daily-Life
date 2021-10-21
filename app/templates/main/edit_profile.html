@@ -1,0 +1,38 @@
+<!--
+
+    編輯使用者詳細資訊頁面
+
+    created date : 2021/10/21
+    created by : jay
+
+-->
+
+{% extends 'basic.html' %} 
+
+{% block title %} Edit Profile {% endblock %} 
+
+{% block page_content %} 
+    <div class = 'page-header'>
+        <h1>編輯你的個人資訊</h1>
+    </div>
+    <div class="page">
+        <form class="row g-3" action="{{ url_for('main.edit_profile') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="mb-3">
+                <label for="username" class="form-label">真實名稱</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ form_name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">居住地</label>
+                <input type="text" class="form-control" id="location" name="location" value="{{ form_location }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">關於我</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'about_me'>{{ form_about_me }}</textarea>
+              </div>
+            <div class="col-12">
+              <button class="btn btn-primary" type="submit">送出</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
