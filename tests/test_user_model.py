@@ -83,5 +83,17 @@ class UserModelTestCase(unittest.TestCase):
         u.ping()
         self.assertTrue(u.last_seen > last_seen_berfor)
 
+    def test_gravatar(self) -> None:
+        ''' 測試 生成使用者默認頭貼 URL '''
+
+        u = User(username = 'test', password = 'test', email = 'test@gmail.com')
+        with self.app.test_request_context('/'):
+            gravatar = u.gravatar(size = 256, default = 'wavatar', rating='pg')
+        
+        self.assertTrue(f'https://gravatar.loli.net/avatar/1aedb8d9dc4751e229a335e371db8058' in gravatar)
+        self.assertTrue('s=256' in gravatar)
+        self.assertTrue('r=pg' in gravatar)
+        self.assertTrue('d=wavatar' in gravatar)
+
         
 

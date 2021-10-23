@@ -21,7 +21,6 @@ from ..model import User, Role
 from .. import db
 from ..decorators import admin_required
 
-
 @main.route('/')
 def index():
     return render_template('main/index.html')

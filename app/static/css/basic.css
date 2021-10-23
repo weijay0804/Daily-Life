@@ -1,0 +1,18 @@
+/*
+    basic 樣式
+
+*/
+
+.container {
+    width: 960px;
+    margin: auto;
+    
+}
+
+.page-header {
+    margin-top: 20px;
+}
+
+.page {
+    margin-top: 10px;
+}

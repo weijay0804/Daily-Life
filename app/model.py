@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/21
+    last update date : 2021/10/22
     update by : jay
 
 '''
@@ -14,6 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from flask import current_app
 from datetime import datetime
+import hashlib
 
 # ----- 自訂函式 -----
 from app import db
@@ -115,16 +116,24 @@ class User(db.Model, UserMixin):
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default = datetime.utcnow)  # 註冊日期
     last_seen = db.Column(db.DateTime(), default = datetime.utcnow)     # 上次登入日期
+    avatar_hash = db.Column(db.String(32))
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+
+        # 初始化使用者權限
         if self.role is None:
             if self.email == current_app.config['DAILY_LIFE_ADMIN']:
                 self.role = Role.query.filter_by(name = 'Administrator').first()
             else:
                 self.role = Role.query.filter_by(default = True).first()
+
+        # 初始化使用者頭貼 hsah 值
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = self.gravatar_hash()
+
 
     @property
     def password(self) -> None:
@@ -150,11 +159,25 @@ class User(db.Model, UserMixin):
 
         return self.can(Permission.ADMIN)
 
+
     def ping(self) -> None:
         ''' 更新 使用者登入日期 '''
         self.last_seen = datetime.utcnow()
         db.session.add(self)
         db.session.commit()
+
+    def gravatar_hash(self) -> str:
+        ''' 生成使用者默認頭貼 hash 值 '''
+
+        return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+
+    def gravatar(self, size : int = 100, default : str = 'retro', rating : str = 'g') -> str:
+        ''' 生成使用者頭像 URL '''
+
+        url = 'https://gravatar.loli.net/avatar'
+        
+        return f'{url}/{self.avatar_hash}?s={size}&r={rating}&d={default}'
+
 
 
     def __repr__(self) -> str:
@@ -179,3 +202,4 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id : str) -> User:
     ''' 取得使用者 '''
     return User.query.get(int(user_id))
+
