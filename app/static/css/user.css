@@ -1,0 +1,21 @@
+/* 使用者個人頁面樣式 */
+
+.user-profile {
+   
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+a {
+    text-decoration: none;
+}
+
+.user-info {
+    margin: 0 20px;
+}
+
+.user-btn {
+    align-self: flex-end;
+}

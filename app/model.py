@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/22
+    last update date : 2021/10/26
     update by : jay
 
 '''
@@ -172,7 +172,7 @@ class User(db.Model, UserMixin):
 
         return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
 
-    def gravatar(self, size : int = 100, default : str = 'retro', rating : str = 'g') -> str:
+    def gravatar(self, size : int = 100, default : str = 'identicon', rating : str = 'g') -> str:
         ''' 生成使用者頭像 URL '''
 
         url = 'https://gravatar.loli.net/avatar'
@@ -190,6 +190,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    is_private = db.Column(db.Boolean, default = False, nullable = False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class AnonymousUser(AnonymousUserMixin):

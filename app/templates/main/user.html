@@ -5,13 +5,19 @@
     created date : 2021/10/21
     created by : jay
 
-    update date : 2021/10/22
+    update date : 2021/10/26
     update by : jay
 
 
 -->
 
 {% extends 'basic.html' %} 
+
+{% block head %} 
+  {{ super() }}
+  <link href="{{ url_for('static', filename = 'css/post.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename = 'css/user.css') }}" rel="stylesheet">
+{% endblock %}
 
 {% block title %} User Info {% endblock %} 
 
@@ -22,43 +28,63 @@
     </div>
 
     <div class="page">
-        <div class="profile-img">
-            <img src="{{ user.gravatar(size = 300) }}"> <br>
+        <div class="user-profile">
+            <div class="profile-img">
+                <img src="{{ user.gravatar(size = 300) }}"> <br>
+            </div>
+            
+            <div class="user-info">
+                {% if user.name or user.location %} 
+                    <p>
+                        {% if user.name %}
+                            <h2>
+                            {{ user.name }}
+                            </h2> 
+                        {% endif %}
+                        {% if user.location %} 
+                            來自 <a href="http://maps.google.com/?q={{ user.location }}" target="_blank"> {{ user.location }}</a>
+                        {% endif %} 
+                    </p> 
+                {% endif %}
+                {% if current_user.is_administrator() %} 
+                        <p>
+                            Email:
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </p>
+                {% endif %}
+                {% if user.about_me %} 
+                    <p>
+                        {{ user.about_me }}
+                    </p>
+                {% endif %}
+                <p>
+                    從 {{ moment(user.member_since).format('LL') }} 加入 <br>
+                    上次登入是 {{ moment(user.last_seen).fromTime(now) }}
+                </p>
+
+            </div>
+
+            <!-- TODO 按鈕對齊左 -->
+            <div class="user-btn">
+                {% if current_user == user %}
+                    <a href="{{ url_for('main.edit_profile') }}">
+                        <button type="button" class="btn btn-outline-primary">編輯個人資料</button>    
+                    </a>
+                {% endif %}
+
+                {% if current_user.is_administrator() %}
+                    <a href="{{ url_for('main.edit_profile_admin', id = user.id ) }}">
+                        <button type="button" class="btn btn-outline-danger">編輯使用者資訊 [Admin]</button>
+                    </a>
+                {% endif %}
+            </div>
+
+            
         </div>
         
-        {% if user.name or user.location %} 
-            <p>
-                {% if user.name %} 
-                    {{ user.name }}
-                {% endif %}
-                {% if user.location %} 
-                    來自 <a href="http://maps.google.com/?q={{ user.location }}" target="_blank"> {{ user.location }}</a>
-                {% endif %} 
-            </p> 
-        {% endif %}
-        {% if current_user.is_administrator() %} 
-                <p>
-                    <a href="mailto:{{ user.email }}">{{ user.email }}</a>
-                </p>
-        {% endif %}
-        {% if user.about_me %} 
-            <p>
-                {{ user.about_me }}
-            </p>
-        {% endif %}
-        <p>
-            從 {{ moment(user.member_since).format('LL') }} 加入 <br>
-            上次登入是 {{ moment(user.last_seen).fromTime(now) }}
-        </p>
-
-        {% if current_user == user %}
-            <a href="{{ url_for('main.edit_profile') }}">編輯個人資料</a>
-        {% endif %}
-
-        {% if current_user.is_administrator() %} 
-            <a href="{{ url_for('main.edit_profile_admin', id = user.id ) }}">
-                編輯使用者資訊 [Admin]
-            </a>
-        {% endif %}
+        <div class="user-posts">
+            <h3>{{ user.username }} 的貼文</h3>
+            {% include 'main/_post.html' %}
+        </div>
     </div>
 {% endblock %}

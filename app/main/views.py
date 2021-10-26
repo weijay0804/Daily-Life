@@ -5,12 +5,12 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/21
+    last update date : 2021/10/26
     update by : jay
 
 '''
 
-from flask import render_template, session, request, redirect, url_for
+from flask import render_template, session, request, redirect, url_for, abort
 from flask.helpers import flash
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -26,7 +26,11 @@ def index():
 
     if request.method == 'POST' and current_user.can(Permission.WRITE):
         post_data = request.form.get('post')
-        post = Post(body = post_data, author = current_user._get_current_object())
+        is_private = request.form.get('is_private')
+        if is_private == 'on':
+            post = Post(body = post_data, author = current_user._get_current_object(), is_private = True)
+        else:
+            post = Post(body = post_data, author = current_user._get_current_object())
         db.session.add(post)
         db.session.commit()
 
@@ -43,7 +47,10 @@ def user(username : str):
     now = datetime.utcnow()
 
     user = User.query.filter(User.username == username).first()
-    return render_template('main/user.html', user = user, now = now)
+    if user is None:
+        abort(404)
+    posts = user.posts.order_by(Post.timestamp.desc()).all()
+    return render_template('main/user.html', user = user, now = now, posts = posts)
 
 @main.route('/edit-profile', methods = ['GET', 'POST'])
 @login_required

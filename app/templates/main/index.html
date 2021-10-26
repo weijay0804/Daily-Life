@@ -5,44 +5,51 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/06
+    last update date : 2021/10/26
     update by : jay
 
 -->
 
 {% extends 'basic.html' %} 
 
+{% block head %} 
+  {{ super() }}
+  <link href="{{ url_for('static', filename = 'css/index.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename = 'css/post.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block title %} Daily Life index {% endblock %}
 
 {% block page_content %} 
   <div class="page-header">
-    <h1>Hello!!</h1>
     {% if current_user.is_authenticated %} 
-    <p>welcome {{ current_user.username }}</p>
+    <h1>Hello {{ current_user.username }}</h1>
+    {% else %}
+    <h1>Daily Life</h1> 
     {% endif %}
   </div>
   <div class="page">
+    <!-- TODO 按鈕靠右 -->
     {% if current_user.is_authenticated %}
-    <form class="row g-3" action="{{ url_for('main.index') }}" method="POST">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <div class="mb-3">
-          <label for="exampleFormControlTextarea1" class="form-label">在想什麼</label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'post'></textarea>
+    <div class="form-content">
+      <form class="row g-3" action="{{ url_for('main.index') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="mb-3 row">
+            <label for="exampleFormControlTextarea1" class="form-label">在想什麼</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'post' required></textarea>
         </div>
-      <div class="col-12">
-        <button class="btn btn-primary" type="submit">送出</button>
-      </div>
-    </form>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1" name="is_private">
+            <label class="form-check-label" for="exampleCheck1" title="設為私人貼文代表只有本人能看到貼文">設為私人貼文</label>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-primary" type="submit">送出</button>
+          </div>
+      </form> 
+    </div>
     {% endif %}
 
-    {% for post in posts %}
-    <div class="post">
-      <img src="{{ post.author.gravatar(size=40) }}">
-      <h2>{{ post.author.username }}</h2>   
-      <p>{{ post.body }}</p>
-    </div>
-    {% endfor %}
-
+    {% include 'main/_post.html' %}
   </div>
   
 {% endblock %}
