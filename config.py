@@ -5,7 +5,7 @@
     created date : 2021/10/05
     created by : jay
 
-    last update date : 2021/10/16
+    last update date : 2021/10/26
     update by : jay
 
 '''
@@ -21,6 +21,7 @@ class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DAILY_LIFE_ADMIN = os.environ.get('DAILY_LIFE_ADMIN')
+    POSTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

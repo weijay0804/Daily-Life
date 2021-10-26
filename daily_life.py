@@ -14,14 +14,14 @@ from flask_migrate import Migrate
 
 # ----- 自訂函式 -----
 from app import create_app, db
-from app.model import User, Role
+from app.model import User, Role, Post
 
 app = create_app('default')
 migrate = Migrate(app, db)
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db = db, User = User, Role = Role)
+    return dict(db = db, User = User, Role = Role, Post = Post)
 
 @app.cli.command()
 def test():

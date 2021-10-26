@@ -7,3 +7,5 @@ __pycache__
 
 # 環境變數
 .env
+
+fake.py

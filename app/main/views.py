@@ -10,7 +10,7 @@
 
 '''
 
-from flask import render_template, session, request, redirect, url_for, abort
+from flask import render_template, session, request, redirect, url_for, abort, current_app
 from flask.helpers import flash
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -35,10 +35,13 @@ def index():
         db.session.commit()
 
         return redirect(url_for('main.index'))
-    
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
 
-    return render_template('main/index.html', posts = posts)
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page = current_app.config['POSTS_PER_PAGE'], error_out = False)
+    posts = pagination.items
+    
+
+    return render_template('main/index.html', posts = posts, pagination = pagination)
 
 @main.route('/user/<username>')
 def user(username : str):

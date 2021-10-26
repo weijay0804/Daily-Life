@@ -11,6 +11,7 @@
 -->
 
 {% extends 'basic.html' %} 
+{% import 'main/_macros.html' as macros %} 
 
 {% block head %} 
   {{ super() }}
@@ -49,7 +50,21 @@
     </div>
     {% endif %}
 
-    {% include 'main/_post.html' %}
+    {% if pagination %} 
+        <div class="pagination-content">
+          {{ macros.pagination_widget(pagination, '.index', is_top = True) }}
+        </div>
+    {% endif %}
+
+    <div class="posts-content">
+      {% include 'main/_post.html' %}
+    </div>
+
+    {% if pagination %} 
+        <div class="pagination-content">
+          {{ macros.pagination_widget(pagination, '.index') }}
+        </div>
+    {% endif %}
   </div>
   
 {% endblock %}
