@@ -119,6 +119,7 @@ class User(db.Model, UserMixin):
     avatar_hash = db.Column(db.String(32))
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
+    posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')   # 一對多的 ( 一 )
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -178,10 +179,18 @@ class User(db.Model, UserMixin):
         
         return f'{url}/{self.avatar_hash}?s={size}&r={rating}&d={default}'
 
-
-
     def __repr__(self) -> str:
         return '<User %r>' % self.username
+
+
+class Post(db.Model):
+
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class AnonymousUser(AnonymousUserMixin):
     ''' 匿名用戶 '''

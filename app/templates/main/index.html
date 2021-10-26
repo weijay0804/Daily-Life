@@ -17,8 +17,32 @@
 {% block page_content %} 
   <div class="page-header">
     <h1>Hello!!</h1>
-  </div>
-  {% if current_user.is_authenticated %} 
+    {% if current_user.is_authenticated %} 
     <p>welcome {{ current_user.username }}</p>
-  {% endif %}
+    {% endif %}
+  </div>
+  <div class="page">
+    {% if current_user.is_authenticated %}
+    <form class="row g-3" action="{{ url_for('main.index') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">在想什麼</label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'post'></textarea>
+        </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">送出</button>
+      </div>
+    </form>
+    {% endif %}
+
+    {% for post in posts %}
+    <div class="post">
+      <img src="{{ post.author.gravatar(size=40) }}">
+      <h2>{{ post.author.username }}</h2>   
+      <p>{{ post.body }}</p>
+    </div>
+    {% endfor %}
+
+  </div>
+  
 {% endblock %}

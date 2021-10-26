@@ -17,13 +17,24 @@ from datetime import datetime
 
 # ----- 自訂函式 -----
 from . import main
-from ..model import User, Role
+from ..model import User, Role, Post, Permission
 from .. import db
 from ..decorators import admin_required
 
-@main.route('/')
+@main.route('/', methods = ['GET', 'POST'])
 def index():
-    return render_template('main/index.html')
+
+    if request.method == 'POST' and current_user.can(Permission.WRITE):
+        post_data = request.form.get('post')
+        post = Post(body = post_data, author = current_user._get_current_object())
+        db.session.add(post)
+        db.session.commit()
+
+        return redirect(url_for('main.index'))
+    
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+
+    return render_template('main/index.html', posts = posts)
 
 @main.route('/user/<username>')
 def user(username : str):
@@ -91,3 +102,6 @@ def edit_profile_admin(id):
         }
 
     return render_template('main/edit_profile_admin.html', user = user, **form_datas)
+
+
+
