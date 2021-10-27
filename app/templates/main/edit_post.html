@@ -1,0 +1,29 @@
+{% extends 'basic.html' %} 
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename = 'css/post.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>編輯文章</h1>
+    </div>
+    <div class="page">
+        <div class="form-content">
+            <form class="row g-3" action="{{ url_for('main.edit', id = post.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <div class="mb-3 row">
+                  <label for="exampleFormControlTextarea1" class="form-label">在想什麼</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'post' required>{{ post.body }}</textarea>
+              </div>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="exampleCheck1" name="is_private" {% if post.is_private %} checked {% endif %}>
+                  <label class="form-check-label" for="exampleCheck1" title="設為私人貼文代表只有本人能看到貼文">設為私人貼文</label>
+                </div>
+                <div class="mb-3">
+                  <button class="btn btn-primary" type="submit">修改</button>
+                </div>
+            </form> 
+        </div> 
+    </div>
+{% endblock %}

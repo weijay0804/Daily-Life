@@ -14,9 +14,14 @@
           <div class="post-body">{{ post.body }}</div>
           <div class="post-footer">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="button" class="btn btn-outline-info btn-sm">
-                <a href="{{ url_for('main.post', id = post.id) }}">Link</a>
+              <button type="button" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ url_for('main.post', id = post.id) }}">連結</a>
               </button>
+              {% if current_user == post.author %}
+              <button type="button" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ url_for('main.edit', id = post.id) }}">編輯</a>
+              </button>
+              {% endif %}
             </div>
             
           </div>

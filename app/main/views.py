@@ -114,11 +114,40 @@ def edit_profile_admin(id):
     return render_template('main/edit_profile_admin.html', user = user, **form_datas)
 
 
-
 @main.route('/post/<int:id>')
 def post(id):
     ''' 特定文章頁面 '''
 
     post = Post.query.get_or_404(id)
     return render_template('main/post.html', posts = [post])
+
+
+@main.route('/edit/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def edit(id):
+    ''' 修改文章頁面 '''
+
+    post = Post.query.get_or_404(id)
+
+    if current_user != post.author and not current_user.can(Permission.ADMIN):
+        abort(403)
+
+    if request.method == 'POST':
+        post_data = request.form.get('post')
+        is_private = request.form.get('is_private')
+        post.body = post_data
+        if is_private == 'on':
+            post.is_private = True
+        else:
+            post.is_private = False
+
+        db.session.commit()
+
+        flash('文章修改完成')
+        return redirect(url_for('main.post', id =  post.id))
+    
+
+
+    return render_template('main/edit_post.html', post = post)
+
 
