@@ -115,3 +115,10 @@ def edit_profile_admin(id):
 
 
 
+@main.route('/post/<int:id>')
+def post(id):
+    ''' 特定文章頁面 '''
+
+    post = Post.query.get_or_404(id)
+    return render_template('main/post.html', posts = [post])
+

@@ -13,7 +13,7 @@
         </a>
       </li> 
 
-      {% for p in pagination.iter_pages() %}
+      {% for p in pagination.iter_pages(left_edge=2, left_current=2, right_current=2, right_edge=2) %}
         {% if p %} 
           {% if p == pagination.page %} 
             <li class="page-item active"><a class="page-link" href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a></li>

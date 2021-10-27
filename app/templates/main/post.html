@@ -1,0 +1,16 @@
+<!-- 特定文章頁面 -->
+
+{% extends 'basic.html' %} 
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename = 'css/post.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+
+    </div>
+    <div class="page">
+        {% include 'main/_post.html' %} 
+    </div>
+{% endblock %}
