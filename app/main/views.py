@@ -148,3 +148,45 @@ def edit(id):
 
     return render_template('main/edit_post.html', post = post)
 
+
+@main.route('/follow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+    ''' 使用者追隨視圖 '''
+
+    user = User.query.filter_by(username = username).first()
+
+    if not user:
+        flash('無效的使用者')
+        return redirect(url_for('main.index'))
+    if current_user.is_following(user):
+        flash('你已經關注該使用者')
+        return redirect(url_for('main.user', username = username))
+    
+    current_user.follow(user)
+    db.session.commit()
+    flash(f'開始關注 {username} ')
+
+    return redirect(url_for('main.user', username = username))
+
+
+@main.route('/unfollow/<username>')
+@login_required
+def unfollow(username):
+    ''' 解除關注視圖 '''
+
+    user = User.query.filter_by(username = username).first()
+
+    if not user:
+        flash('無效的使用者')
+        return redirect(url_for('main.index'))
+    
+    if not current_user.is_following(user):
+        flash('錯誤')
+        return redirect(url_for('main.user', username = username))
+
+    current_user.unfollow(user)
+
+    flash(f'你不再關注 {username} 了')
+    return redirect(url_for('main.user', username = username))

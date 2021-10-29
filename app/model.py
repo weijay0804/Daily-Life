@@ -233,6 +233,7 @@ class User(db.Model, UserMixin):
 
         if f:
             db.session.delete(f)
+            db.session.commit()
 
     def __repr__(self) -> str:
         return '<User %r>' % self.username

@@ -61,25 +61,50 @@
                     從 {{ moment(user.member_since).format('LL') }} 加入 <br>
                     上次登入是 {{ moment(user.last_seen).fromTime(now) }}
                 </p>
+                <p>
+                    {% if current_user.can(Permission.FOLLOW) and user != current_user %} 
+                        {% if not current_user.is_following(user) %}
+                            <button type="button" class="btn btn-info">
+                                <a href="{{ url_for('main.follow', username = user.username) }}">Follow</a>
+                            </button>    
+                            
+                        {% else %} 
+                            <button type="button" class="btn btn-danger">
+                                <a href="{{ url_for('main.unfollow', username = user.username) }}">Unfollow</a>
+                            </button>
+                            
+                        {% endif %}
+                    {% endif %}
+
+                    <a href="#">
+                        Following: <span class="badge bg-primary rounded-pil">{{ user.following.count() }}</span>
+                    </a>
+                    <a href="#">
+                        Followers: <span class="badge bg-primary rounded-pil">{{ user.followers.count() }}</span>
+                    </a>
+
+                    {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %} 
+                        | <span class="badge rounded-pill bg-info text-dark">Follow You</span>
+                    {% endif %}
+                </p>
+
+                <!-- TODO 按鈕對齊左 -->
+                <div class="user-btn">
+                    {% if current_user == user %}
+                        <a href="{{ url_for('main.edit_profile') }}">
+                            <button type="button" class="btn btn-outline-primary">編輯個人資料</button>    
+                        </a>
+                    {% endif %}
+
+                    {% if current_user.is_administrator() %}
+                        <a href="{{ url_for('main.edit_profile_admin', id = user.id ) }}">
+                            <button type="button" class="btn btn-outline-danger">編輯使用者資訊 [Admin]</button>
+                        </a>
+                    {% endif %}
+                </div>
                 
 
             </div>
-
-            <!-- TODO 按鈕對齊左 -->
-            <div class="user-btn">
-                {% if current_user == user %}
-                    <a href="{{ url_for('main.edit_profile') }}">
-                        <button type="button" class="btn btn-outline-primary">編輯個人資料</button>    
-                    </a>
-                {% endif %}
-
-                {% if current_user.is_administrator() %}
-                    <a href="{{ url_for('main.edit_profile_admin', id = user.id ) }}">
-                        <button type="button" class="btn btn-outline-danger">編輯使用者資訊 [Admin]</button>
-                    </a>
-                {% endif %}
-            </div>
-
             
         </div>
         
