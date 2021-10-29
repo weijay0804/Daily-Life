@@ -19,7 +19,7 @@ from datetime import datetime
 from . import main
 from ..model import User, Role, Post, Permission
 from .. import db
-from ..decorators import admin_required
+from ..decorators import admin_required, permission_required
 
 @main.route('/', methods = ['GET', 'POST'])
 def index():
@@ -145,9 +145,6 @@ def edit(id):
 
         flash('文章修改完成')
         return redirect(url_for('main.post', id =  post.id))
-    
-
 
     return render_template('main/edit_post.html', post = post)
-
 

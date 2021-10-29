@@ -14,8 +14,7 @@ import unittest
 
 # ----- 自訂函式 -----
 from app import create_app, db
-from app.model import Permission, User, Role, AnonymousUser
-
+from app.model import Permission, User, Role, AnonymousUser, Follow
 class UserModelTestCase(unittest.TestCase):
     ''' User 模組單元測試'''
     
@@ -94,6 +93,103 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue('s=256' in gravatar)
         self.assertTrue('r=pg' in gravatar)
         self.assertTrue('d=wavatar' in gravatar)
+
+
+
+    def test_is_following(self) -> None:
+        ''' 測試 使用者是否有追隨特定使用者 '''
+
+        u1 = User(username = 'test1')
+        u2 = User(username = 'test2')
+        u3 = User(username = 'test3')
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+        f1 = Follow(user_id = u1.id, follow_id = u2.id) # u1 追隨 u2
+        f2 = Follow(user_id = u1.id, follow_id = u3.id) # u1 追隨 u3
+        f3 = Follow(user_id = u3.id, follow_id = u1.id) # u3 追隨 u1
+        f4 = Follow(user_id = u3.id, follow_id = u2.id) # u3 追隨 u2
+
+        db.session.add_all([f1, f2, f3, f4])
+        db.session.commit()
+
+        self.assertTrue(u1.is_following(u2))
+        self.assertTrue(u1.is_following(u3))
+        self.assertTrue(u3.is_following(u1))
+        self.assertTrue(u3.is_following(u2))
+        self.assertFalse(u2.is_following(u1))
+        self.assertFalse(u2.is_following(u3))
+
+    def test_is_followed_by(self) -> None:
+        ''' 測試 使用者是否被特定使用者追隨 '''
+
+        u1 = User(username = 'test1')
+        u2 = User(username = 'test2')
+        u3 = User(username = 'test3')
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+        f1 = Follow(user_id = u1.id, follow_id = u2.id) # u1 追隨 u2
+        f2 = Follow(user_id = u1.id, follow_id = u3.id) # u1 追隨 u3
+        f3 = Follow(user_id = u3.id, follow_id = u1.id) # u3 追隨 u1
+        f4 = Follow(user_id = u3.id, follow_id = u2.id) # u3 追隨 u2
+
+        db.session.add_all([f1, f2, f3, f4])
+        db.session.commit()
+
+        self.assertTrue(u1.is_followed_by(u3))
+        self.assertTrue(u2.is_followed_by(u1))
+        self.assertTrue(u2.is_followed_by(u3))
+        self.assertFalse(u1.is_followed_by(u2))
+        self.assertFalse(u3.is_followed_by(u2))
+
+    def test_follow_user(self) -> None:
+        ''' 測試 使用者追隨其他使用者 '''
+
+        u1 = User(username = 'test1')
+        u2 = User(username = 'test2')
+        u3 = User(username = 'test3')
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+        u1.follow(u2)
+        u1.follow(u3)
+        u3.follow(u1)
+        u3.follow(u2)
+
+        self.assertTrue(u1.is_following(u2))
+        self.assertTrue(u1.is_following(u3))
+        self.assertFalse(u2.is_following(u1))
+        self.assertFalse(u2.is_following(u3))
+        self.assertTrue(u3.is_following(u1))
+        self.assertTrue(u3.is_following(u2))
+
+
+    def test_unfollow(self) -> None:
+        ''' 測試 取消追隨 '''
+
+        u1 = User(username = 'test1')
+        u2 = User(username = 'test2')
+        u3 = User(username = 'test3')
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+        u1.follow(u2)
+        u1.follow(u3)
+        u3.follow(u1)
+        u3.follow(u2)
+
+        u1.unfollow(u2)
+        u3.unfollow(u1)
+
+        self.assertFalse(u1.is_following(u2))
+        self.assertTrue(u1.is_following(u3))
+        self.assertTrue(u3.is_following(u2))
+        self.assertFalse(u3.is_following(u1))
+
+
+
+
 
         
 

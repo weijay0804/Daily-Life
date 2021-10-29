@@ -102,6 +102,14 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
+class Follow(db.Model):
+
+    __tablename__ = 'follows'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)  # 追隨的人
+    follow_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)  # 被追隨的人
+    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+
 class User(db.Model, UserMixin):
     ''' 使用者資料庫模型 '''
 
@@ -120,6 +128,19 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
     posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')   # 一對多的 ( 一 )
+
+    following = db.relationship(
+        'Follow', foreign_keys = [Follow.user_id], 
+        backref = db.backref('follower', lazy = 'joined'),
+        lazy = 'dynamic', cascade = 'all, delete-orphan'
+        )  # 使用者追隨中的人
+    
+    followers = db.relationship(
+        'Follow', foreign_keys = [Follow.follow_id], 
+        backref = db.backref('following', lazy = 'joined'),
+        lazy = 'dynamic', cascade = 'all, delete-orphan'
+        ) # 追隨使用者的人
+
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -177,10 +198,45 @@ class User(db.Model, UserMixin):
 
         url = 'https://gravatar.loli.net/avatar'
         
-        return f'{url}/{self.avatar_hash}?s={size}&r={rating}&d={default}'
+        return f'{url}/{self.avatar_hash}?s={size}&r={rating}&d={default}'   
+
+
+    def is_following(self, user) -> bool:
+        ''' 檢查使用者是否有追隨特定使用者 '''
+
+        if user.id is None:
+            return False
+
+        return self.following.filter_by(follow_id = user.id).first() is not None  
+
+    def  is_followed_by(self, user) -> bool:
+        ''' 檢查使用者使否有被特定使用者追隨 '''  
+
+        if user.id is None:
+            return False
+        
+        return self.followers.filter_by(user_id = user.id).first() is not None
+
+
+    def follow(self, user) -> None:
+        ''' 追隨使用者 '''
+
+        if not self.is_following(user):
+            f = Follow(user_id = self.id, follow_id = user.id)
+            db.session.add(f)
+            db.session.commit()
+    
+    def unfollow(self, user) -> None:
+        ''' 解除追隨 '''
+
+        f = self.following.filter_by(follow_id = user.id).first()
+
+        if f:
+            db.session.delete(f)
 
     def __repr__(self) -> str:
         return '<User %r>' % self.username
+
 
 
 class Post(db.Model):
