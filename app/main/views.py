@@ -36,21 +36,23 @@ def index():
 
         return redirect(url_for('main.index'))
 
-    show_following = False
+    show_posts = 'all'
     if current_user.is_authenticated:
-        show_following = bool(request.cookies.get('show_following', ''))
+        show_posts = request.cookies.get('show_posts', 'all')
     
-    if show_following:
-        query = current_user.following_posts
-    else:
-        query = Post.query
+    if show_posts == 'following':
+        query = current_user.following_posts.filter(Post.is_private == False)
+    elif show_posts == 'all':
+        query = Post.query.filter_by(is_private = False)
+    elif show_posts == 'private':
+        query = current_user.posts.filter_by(is_private = True)
 
     page = request.args.get('page', 1, type=int)
     pagination = query.order_by(Post.timestamp.desc()).paginate(page, per_page = current_app.config['POSTS_PER_PAGE'], error_out = False)
     posts = pagination.items
     
 
-    return render_template('main/index.html', posts = posts, pagination = pagination, show_following = show_following)
+    return render_template('main/index.html', posts = posts, pagination = pagination, show_posts = show_posts)
 
 @main.route('/all')
 @login_required
@@ -58,7 +60,7 @@ def show_all_posts():
     ''' 顯示所有文章 '''
 
     resp = make_response(redirect(url_for('main.index')))
-    resp.set_cookie('show_following', '', max_age=30 * 24 * 60 * 60)    # 30 days
+    resp.set_cookie('show_posts', 'all', max_age=30 * 24 * 60 * 60)    # 30 days
     return resp
 
 @main.route('/following_posts')
@@ -67,19 +69,31 @@ def following_posts():
     ''' 顯示所有追蹤的文章 '''
 
     resp = make_response(redirect(url_for('main.index')))
-    resp.set_cookie('show_following', '1', max_age=30 * 24 * 60 * 60)
+    resp.set_cookie('show_posts', 'following', max_age=30 * 24 * 60 * 60)
+    return resp
+
+@main.route('/private')
+@login_required
+def private_posts():
+    ''' 顯示所有私人文章 '''
+
+    resp = make_response(redirect(url_for('main.index')))
+    resp.set_cookie('show_posts', 'private', max_age= 30 * 24 * 60 * 60)
+
     return resp
 
 @main.route('/user/<username>')
 def user(username : str):
     ''' 使用者個人資訊頁面 '''
 
+    # TODO 如果使用者在本人頁面要顯示私人貼文
+
     now = datetime.utcnow()
 
     user = User.query.filter(User.username == username).first()
     if user is None:
         abort(404)
-    posts = user.posts.order_by(Post.timestamp.desc()).all()
+    posts = user.posts.filter_by(is_private = False).order_by(Post.timestamp.desc()).all()
     return render_template('main/user.html', user = user, now = now, posts = posts)
 
 @main.route('/edit-profile', methods = ['GET', 'POST'])

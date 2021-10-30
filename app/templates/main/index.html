@@ -56,6 +56,22 @@
         </div>
     {% endif %}
 
+    {% if current_user.is_authenticated %}
+    <div class="post-tab">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link {% if show_posts == 'all' %} active {% endif %}" aria-current="page" href="{{ url_for('main.show_all_posts') }}">All</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if show_posts == 'following' %} active {% endif %}" href="{{ url_for('main.following_posts') }}">Following</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if show_posts == 'private' %} active {% endif %}" href="{{ url_for('main.private_posts') }}">Private</a>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+
     <div class="posts-content">
       {% include 'main/_post.html' %}
     </div>
