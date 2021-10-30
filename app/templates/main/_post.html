@@ -1,5 +1,15 @@
 <!-- 貼文串模板 -->
 
+{% if current_user.is_authenticated %}
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" aria-current="page" href="{{ url_for('main.show_all_posts') }}">All</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('main.following_posts') }}">Following</a>
+  </li>
+</ul>
+{% endif %}
 <ul class="posts">
     {% for post in posts %} 
       <li class="post">

@@ -101,6 +101,17 @@ class Role(db.Model):
     def __repr__(self) -> str:
         return '<Role %r>' % self.name
 
+class Post(db.Model):
+
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    is_private = db.Column(db.Boolean, default = False, nullable = False)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
 
 class Follow(db.Model):
 
@@ -156,6 +167,11 @@ class User(db.Model, UserMixin):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
 
+    @property
+    def following_posts(self) -> Post:
+        ''' 取得關注的使用者的文章 '''
+
+        return Post.query.join(Follow, Follow.follow_id == Post.author_id).filter(Follow.user_id == self.id)
 
     @property
     def password(self) -> None:
@@ -238,17 +254,6 @@ class User(db.Model, UserMixin):
     def __repr__(self) -> str:
         return '<User %r>' % self.username
 
-
-
-class Post(db.Model):
-
-    __tablename__ = 'posts'
-
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
-    is_private = db.Column(db.Boolean, default = False, nullable = False)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class AnonymousUser(AnonymousUserMixin):
     ''' 匿名用戶 '''

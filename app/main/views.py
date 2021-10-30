@@ -10,7 +10,7 @@
 
 '''
 
-from flask import render_template, session, request, redirect, url_for, abort, current_app
+from flask import render_template, session, request, redirect, url_for, abort, current_app, make_response
 from flask.helpers import flash
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -36,12 +36,39 @@ def index():
 
         return redirect(url_for('main.index'))
 
+    show_following = False
+    if current_user.is_authenticated:
+        show_following = bool(request.cookies.get('show_following', ''))
+    
+    if show_following:
+        query = current_user.following_posts
+    else:
+        query = Post.query
+
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page = current_app.config['POSTS_PER_PAGE'], error_out = False)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page, per_page = current_app.config['POSTS_PER_PAGE'], error_out = False)
     posts = pagination.items
     
 
-    return render_template('main/index.html', posts = posts, pagination = pagination)
+    return render_template('main/index.html', posts = posts, pagination = pagination, show_following = show_following)
+
+@main.route('/all')
+@login_required
+def show_all_posts():
+    ''' 顯示所有文章 '''
+
+    resp = make_response(redirect(url_for('main.index')))
+    resp.set_cookie('show_following', '', max_age=30 * 24 * 60 * 60)    # 30 days
+    return resp
+
+@main.route('/following_posts')
+@login_required
+def following_posts():
+    ''' 顯示所有追蹤的文章 '''
+
+    resp = make_response(redirect(url_for('main.index')))
+    resp.set_cookie('show_following', '1', max_age=30 * 24 * 60 * 60)
+    return resp
 
 @main.route('/user/<username>')
 def user(username : str):
@@ -225,3 +252,4 @@ def followers(username):
     follows = [{'user' : item.follower, 'timestamp' : item.timestamp} for item in pagination.items]
 
     return render_template('main/follow.html', user = user, title = f"關注 { user.username } 的人", endpoint = 'main.followers', pagination = pagination, follows = follows)
+
