@@ -190,3 +190,38 @@ def unfollow(username):
 
     flash(f'你不再關注 {username} 了')
     return redirect(url_for('main.user', username = username))
+
+
+@main.route('/following/<username>')
+def following(username):
+    ''' 顯示使用者關注的人 '''
+
+    user = User.query.filter_by(username = username).first()
+
+    if not user:
+        flash('無效的使用者')
+        return redirect(url_for('main.index'))
+    
+    page = request.args.get('page', 1, type=int)
+    pagination = user.following.paginate(page, per_page = 10, error_out = False)
+
+    follows = [{'user' : item.following, 'timestamp' : item.timestamp} for item in pagination.items]
+
+    return render_template('main/follow.html', user = user, title = f"{ user.username } 關注的人", endpoint = 'main.following', pagination = pagination, follows = follows)
+
+@main.route('/followers/<username>')
+def followers(username):
+    ''' 顯示關注使用者的人 '''
+
+    user = User.query.filter_by(username = username).first()
+
+    if not user:
+        flash('無效的使用者')
+        return redirect(url_for('main.index'))
+    
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(page, per_page = 10, error_out = False)
+
+    follows = [{'user' : item.follower, 'timestamp' : item.timestamp} for item in pagination.items]
+
+    return render_template('main/follow.html', user = user, title = f"關注 { user.username } 的人", endpoint = 'main.followers', pagination = pagination, follows = follows)

@@ -76,10 +76,10 @@
                         {% endif %}
                     {% endif %}
 
-                    <a href="#">
+                    <a href="{{ url_for('main.following', username = user.username) }}">
                         Following: <span class="badge bg-primary rounded-pil">{{ user.following.count() }}</span>
                     </a>
-                    <a href="#">
+                    <a href="{{ url_for('main.followers', username = user.username) }}">
                         Followers: <span class="badge bg-primary rounded-pil">{{ user.followers.count() }}</span>
                     </a>
 
