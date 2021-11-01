@@ -1,6 +1,7 @@
 <!-- 特定文章頁面 -->
 
-{% extends 'basic.html' %} 
+{% extends 'basic.html' %}
+{% import 'main/_macros.html' as macros %} 
 
 {% block head %}
     {{ super() }}
@@ -11,6 +12,30 @@
 
     </div>
     <div class="page">
+        <div class="posts-content">
         {% include 'main/_post.html' %} 
+        </div>
+        <div class="comment-content">
+            <h2>Comment</h2>
+            <div class="form-content">
+                <form class="row g-3" action="{{ url_for('main.post', id = posts[0].id) }}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="mb-3 row">
+                        <label for="exampleFormControlTextarea1" class="form-label">輸入留言</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = 'comment' required></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <button class="btn btn-primary" type="submit">確認</button>
+                    </div>
+                </form> 
+            </div> 
+            {% include 'main/_comments.html' %}
+        </div>
+        {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, '.post', id=posts[0].id) }}
+        </div>
+        {% endif %}
     </div>
+    
 {% endblock %}

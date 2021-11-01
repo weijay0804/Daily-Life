@@ -17,7 +17,7 @@ from datetime import datetime
 
 # ----- 自訂函式 -----
 from . import main
-from ..model import User, Role, Post, Permission
+from ..model import User, Role, Post, Permission, Comment
 from .. import db
 from ..decorators import admin_required, permission_required
 
@@ -157,12 +157,30 @@ def edit_profile_admin(id):
     return render_template('main/edit_profile_admin.html', user = user, **form_datas)
 
 
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods = ['GET', 'POST'])
 def post(id):
     ''' 特定文章頁面 '''
 
     post = Post.query.get_or_404(id)
-    return render_template('main/post.html', posts = [post])
+
+    if request.method == 'POST':
+        if not current_user.is_authenticated:
+            flash('請先登入')
+            return redirect(url_for('auth.login'))
+        comment_data = request.form.get('comment')
+        comment = Comment(body = comment_data, post = post, author = current_user._get_current_object())
+        db.session.add(comment)
+        db.session.commit()
+        flash('留言已送出')
+        return redirect(url_for('main.post', id = post.id))
+
+    page = request.args.get('page', 1, type=int)
+    
+    pagination = post.comments.order_by(Comment.timestamp.desc()).paginate(page, per_page = 5, error_out = False)
+
+    comments = pagination.items
+
+    return render_template('main/post.html', posts = [post], comments = comments, pagination = pagination)
 
 
 @main.route('/edit/<int:id>', methods = ['GET', 'POST'])

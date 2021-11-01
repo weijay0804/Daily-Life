@@ -111,6 +111,8 @@ class Post(db.Model):
     is_private = db.Column(db.Boolean, default = False, nullable = False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    comments = db.relationship('Comment', backref = 'post', lazy = 'dynamic')
+
 
 
 class Follow(db.Model):
@@ -120,6 +122,17 @@ class Follow(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)  # 追隨的人
     follow_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)  # 被追隨的人
     timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+
+class Comment(db.Model):
+    ''' 使用者評論資料庫模型 '''
+
+    __tablename__ = 'comments'
+
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
 class User(db.Model, UserMixin):
     ''' 使用者資料庫模型 '''
@@ -139,6 +152,7 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
     posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')   # 一對多的 ( 一 )
+    comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
     following = db.relationship(
         'Follow', foreign_keys = [Follow.user_id], 
