@@ -10,8 +10,27 @@
             <div class="comment-date">{{ moment(comment.timestamp).fromNow() }}</div>
             <div class="comment-author"><a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
             <div class="comment-body">
+                {% if comment.disabled %}
+                    <p>
+                        <i>此留言已經被管理員禁止</i>
+                    </p>
+                {% endif %}
+                {% if current_user.can(Permission.MODERATE) or not comment.disabled %}
                     {{ comment.body }}
+                {% endif %}
             </div>
+            {% if current_user.can(Permission.MODERATE) %} 
+                {% if comment.disabled %}
+                    <a href="{{ url_for('main.enable', id = comment.id, page = page) }}">
+                        <span class="badge rounded-pill bg-success">解除禁止</span>
+                    </a>
+                {% else %} 
+                    <a href="{{ url_for('main.disabled', id = comment.id, page = page) }}">
+                        <span class="badge rounded-pill bg-danger">禁止此留言</span>
+                    </a>
+                {% endif %} 
+            {% endif %}
+
         </div>
     </li>
     {% endfor %}

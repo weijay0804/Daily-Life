@@ -287,3 +287,42 @@ def followers(username):
 
     return render_template('main/follow.html', user = user, title = f"關注 { user.username } 的人", endpoint = 'main.followers', pagination = pagination, follows = follows)
 
+
+@main.route('/modrate')
+@login_required
+@permission_required(Permission.MODERATE)
+def modrate():
+    ''' 管理留言 '''
+
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.join(Post, Post.id == Comment.post_id).filter(Post.is_private == False).order_by(Comment.timestamp.desc()).paginate(page, per_page = 10, error_out = False)
+    comments = pagination.items
+    return render_template('main/modrate.html', pagination = pagination, comments = comments)
+
+@main.route('/modrate/disabled/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE)
+def disabled(id):
+    ''' 禁止留言 '''
+
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = True
+    db.session.commit()
+    flash('留言已被禁止')
+    return redirect(url_for('main.modrate', page = request.args.get('page', 1, type=int)))
+
+
+@main.route('/modrate/enable/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE)
+def enable(id):
+    ''' 解除禁止留言 '''
+
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = False
+    db.session.commit()
+    flash('已解除禁止')
+    return redirect(url_for('main.modrate', page = request.args.get('page', 1, type=int)))
+
+
+

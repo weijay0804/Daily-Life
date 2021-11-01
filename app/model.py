@@ -123,6 +123,7 @@ class Follow(db.Model):
     follow_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)  # 被追隨的人
     timestamp = db.Column(db.DateTime, default = datetime.utcnow)
 
+
 class Comment(db.Model):
     ''' 使用者評論資料庫模型 '''
 
@@ -131,8 +132,10 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+    disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
 
 class User(db.Model, UserMixin):
     ''' 使用者資料庫模型 '''
