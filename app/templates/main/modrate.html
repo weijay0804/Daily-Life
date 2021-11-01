@@ -11,9 +11,11 @@
         <h2> 管理留言 </h2>
     </div>
     <div class="page">
-        {% include 'main/_comments.html' %} 
+        <div class="comment-content">
+            {% include 'main/_comments.html' %} 
+        </div>
         {% if pagination %} 
-            <div class="pagination">
+            <div class="pagination-content">
                 {{ macros.pagination_widget(pagination, 'main.modrate') }}
             </div>
         {% endif %}  

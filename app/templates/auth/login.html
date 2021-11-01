@@ -36,7 +36,11 @@
               <button class="btn btn-primary" type="submit">送出</button>
             </div>
         </form>
-        <p>還沒有註冊嗎?</p>
-        <a href="{{ url_for('auth.register') }}">註冊</a>
+        <br>
+        <p>還沒有註冊嗎?
+            <a href="{{ url_for('auth.register') }}">
+                <span class="badge bg-info text-dark">註冊</span>
+            </a>
+        </p>
     </div>
 {% endblock %}

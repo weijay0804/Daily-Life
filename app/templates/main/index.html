@@ -30,7 +30,6 @@
     {% endif %}
   </div>
   <div class="page">
-    <!-- TODO 按鈕靠右 -->
     {% if current_user.is_authenticated %}
     <div class="form-content">
       <form class="row g-3" action="{{ url_for('main.index') }}" method="POST">
