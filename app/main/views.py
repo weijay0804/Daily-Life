@@ -86,14 +86,16 @@ def private_posts():
 def user(username : str):
     ''' 使用者個人資訊頁面 '''
 
-    # TODO 如果使用者在本人頁面要顯示私人貼文
-
     now = datetime.utcnow()
 
     user = User.query.filter(User.username == username).first()
     if user is None:
         abort(404)
-    posts = user.posts.filter_by(is_private = False).order_by(Post.timestamp.desc()).all()
+    
+    if user == current_user:
+        posts = user.posts.order_by(Post.timestamp.desc()).all()
+    else:
+        posts = user.posts.filter_by(is_private = False).order_by(Post.timestamp.desc()).all()
     return render_template('main/user.html', user = user, now = now, posts = posts)
 
 @main.route('/edit-profile', methods = ['GET', 'POST'])
