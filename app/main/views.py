@@ -325,4 +325,16 @@ def enable(id):
     return redirect(url_for('main.modrate', page = request.args.get('page', 1, type=int)))
 
 
+@main.route('/search', methods = ['POST'])
+def search():
+    ''' 搜尋功能視圖 '''
 
+    if request.method == 'POST':
+        search_date = request.form.get('search')
+        if not search_date:
+            return redirect(url_for('main.index'))
+        posts = Post.query.join(User, User.id == Post.author_id).filter(User.username.like(f'%{search_date}%')).filter(Post.is_private == False).order_by(Post.timestamp.desc()).all()
+
+        return render_template('main/search.html', posts = posts)
+
+    
