@@ -22,4 +22,4 @@ def inject_permission():
     ''' 在模板 context 中加入 Permission類別 '''
     return dict(Permission = Permission)
 
-from . import views
+from . import views, errors

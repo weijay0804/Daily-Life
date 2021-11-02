@@ -338,3 +338,8 @@ def search():
         return render_template('main/search.html', posts = posts)
 
     
+@main.route('/test')
+def test():
+    a = [1,2,3,4]
+
+    return f'<h1>This is {a[56]}</h1>'

@@ -1,0 +1,24 @@
+{% extends 'basic.html' %} 
+
+{% block title %} 404 Page Not Found {% endblock %}
+
+{% block head %} 
+    {{ super() }}
+    <link href="{{ url_for('static', filename = 'css/error.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_content %} 
+    <div class="page-header">
+        {% block error_header %}
+        <h1>頁面不存在</h1>
+        {% endblock %}
+    </div>
+    <div class="page">
+        <div class="error-content">
+            {% block error %}
+            <h2>你尋找的頁面不存在</h2>
+            <img src="{{ url_for('static', filename = 'images/404.png') }}">
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

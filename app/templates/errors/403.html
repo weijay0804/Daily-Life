@@ -1,0 +1,12 @@
+{% extends 'errors/404.html' %} 
+
+{% block title %} Forbidden {% endblock %} 
+
+{% block error_header %} 
+    <h1>拒絕存取</h1>
+{% endblock %} 
+
+{% block error %}
+    <h2>使用者權限不足</h2>
+    <img src="{{ url_for('static', filename = 'images/403.png') }}">
+{% endblock %}

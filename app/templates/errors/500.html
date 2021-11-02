@@ -1,0 +1,12 @@
+{% extends 'errors/404.html' %} 
+
+{% block title %} Server Error {% endblock %} 
+
+{% block error_header %} 
+    <h1>伺服器發生錯誤</h1>
+{% endblock %} 
+
+{% block error %}
+    <h2>伺服器發生錯誤或網路發生錯誤，請稍候再試</h2>
+    <img src="{{ url_for('static', filename = 'images/500.png') }}">
+{% endblock %}
