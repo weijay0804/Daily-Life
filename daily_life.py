@@ -16,7 +16,7 @@ import sys
 import click
 
 # ----- 自訂函式 -----
-from app import create_app, db
+from app import create_app, db, fake
 from app.model import User, Role, Post
 
 COV = None
@@ -36,6 +36,12 @@ migrate = Migrate(app, db)
 def make_shell_context():
     return dict(db = db, User = User, Role = Role, Post = Post)
 
+@app.cli.command()
+def generate_faker():
+    fake.users()
+    fake.posts()
+
+    print('生成結束')
 
 @app.cli.command()
 def deploy():
