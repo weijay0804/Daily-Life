@@ -37,7 +37,7 @@ def make_shell_context():
     return dict(db = db, User = User, Role = Role, Post = Post)
 
 @app.cli.command()
-def generate_faker():
+def generatefaker():
     fake.users()
     fake.posts()
 
