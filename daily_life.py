@@ -10,7 +10,7 @@
 
 '''
 
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 import os
 import sys
 import click
@@ -32,10 +32,18 @@ migrate = Migrate(app, db)
 
 
 
-
 @app.shell_context_processor
 def make_shell_context():
     return dict(db = db, User = User, Role = Role, Post = Post)
+
+
+@app.cli.command()
+def deploy():
+    upgrade()
+    Role.insert_roles()
+
+    print('更新完成')
+
 
 @app.cli.command()
 @click.option('--coverage/--no-coverage', default = False, help = 'Run tests under coverage.')
