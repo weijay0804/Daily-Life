@@ -23,6 +23,8 @@ class Config():
     DAILY_LIFE_ADMIN = os.environ.get('DAILY_LIFE_ADMIN')
     POSTS_PER_PAGE = 10
 
+    SSL_REDIRECT = False
+
     @staticmethod
     def init_app(app):
         pass
@@ -41,8 +43,20 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+    if os.environ.get('DATABASE_URL'):
+        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql')
+    else:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+
+class HerokuConfig(ProductionConfig):
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+    SSL_REDIRECT = True if os.environ.get('DYNO') else False
 
 
 config = {
@@ -50,4 +64,5 @@ config = {
     'test' : TestConfig,
     'production' : ProductionConfig,
     'default' : DevelopmentConfig,
+    'heroku' : HerokuConfig,
 }
