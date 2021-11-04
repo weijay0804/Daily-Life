@@ -209,6 +209,26 @@ def edit(id):
 
     return render_template('main/edit_post.html', post = post)
 
+@main.route('/delete/<int:id>', methods = ['POST'])
+@login_required
+def delete(id):
+    ''' 刪除貼文視圖 '''
+
+    post = Post.query.get_or_404(id)
+
+    if current_user != post.author and not current_user.can(Permission.ADMIN):
+        abort(403)
+
+    if request.method == 'POST':
+        db.session.delete(post)
+        db.session.commit()
+
+        flash('刪除成功')
+    
+    return redirect(url_for('main.index'))
+
+    
+
 
 @main.route('/follow/<username>')
 @login_required

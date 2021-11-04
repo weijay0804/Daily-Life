@@ -111,8 +111,7 @@ class Post(db.Model):
     is_private = db.Column(db.Boolean, default = False, nullable = False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    comments = db.relationship('Comment', backref = 'post', lazy = 'dynamic')
-
+    comments = db.relationship('Comment', backref = 'post', lazy = 'dynamic', cascade="all, delete-orphan")
 
 
 class Follow(db.Model):
@@ -155,7 +154,7 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 一對多的 ( 多 )
     posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')   # 一對多的 ( 一 )
-    comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
+    comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic', cascade="all, delete-orphan")
 
     following = db.relationship(
         'Follow', foreign_keys = [Follow.user_id], 
