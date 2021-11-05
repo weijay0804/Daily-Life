@@ -33,3 +33,7 @@ div.user-content {
     margin-left: 48px;
     min-height: 48px;
 }
+
+.users-content {
+    margin-bottom: 20px;
+}

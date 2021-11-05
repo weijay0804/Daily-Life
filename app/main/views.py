@@ -344,6 +344,16 @@ def enable(id):
     flash('已解除禁止')
     return redirect(url_for('main.modrate', page = request.args.get('page', 1, type=int)))
 
+@main.route('/admin/user')
+@login_required
+@permission_required(Permission.ADMIN)
+def admin():
+    ''' 管理使用者 '''
+    page = request.args.get('page', 1, type=int)
+    pagination = User.query.order_by(User.username).paginate(page, per_page = 10, error_out = False)
+    users = pagination.items
+
+    return render_template('main/admin_users.html', pagination = pagination, users = users)
 
 @main.route('/search', methods = ['POST'])
 def search():

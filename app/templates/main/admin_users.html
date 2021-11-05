@@ -1,0 +1,26 @@
+{% extends 'basic.html' %} 
+{% import 'main/_macros.html' as macros %} 
+
+{% block head %} 
+    {{ super() }}
+    <link href="{{ url_for('static', filename = 'css/users.css') }}" rel="stylesheet">
+{% endblock %}
+{% block page_content %} 
+  <div class="page-header">
+    <h1>管理使用者</h1>
+  </div>
+  <div class="page">
+    <div class="users-content">
+ 
+        {% include 'main/_user.html' %} 
+
+    </div>
+
+    {% if pagination %} 
+        <div class="pagination-content">
+          {{ macros.pagination_widget(pagination, '.admin') }}
+        </div>
+    {% endif %}
+  </div>
+  
+{% endblock %}

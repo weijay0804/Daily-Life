@@ -1,0 +1,72 @@
+<div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{{ url_for('static', filename = 'images/nav_icon.png') }}" alt="" width="35" height="30" class="d-inline-block align-text-top">
+      Daily Life
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            帳號資訊
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('auth.change_password')}}">更改密碼</a></li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('main.user', username = current_user.username)}}">
+                <img src="{{ url_for('static', filename = 'images/profile.svg') }}" width="30" height="24" class="d-inline-block align-text-top">
+                個人資料
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                <img src="{{ url_for('static', filename = 'images/logout.svg') }}" width="30" height="24" class="d-inline-block align-text-top">
+                登出
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        {% if current_user.can(Permission.MODERATE) and not current_user.can(Permission.ADMIN) %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            後台管理 (Moderate)
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('main.modrate') }}">管理留言</a></li>
+          </ul>
+        </li>
+        {% endif %}
+
+        {% if current_user.can(Permission.ADMIN) %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            後台管理 (Admin)
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('main.modrate') }}">管理留言</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('main.admin') }}">管理會員</a></li>
+          </ul>
+        </li>
+        {% endif %}
+
+        {% else %} 
+        <li class="nav-item navbar-right">
+          <a class="nav-link" href="{{ url_for('auth.login')}}">
+            <img src="{{ url_for('static', filename = 'images/login.svg') }}" width="30" height="24" class="d-inline-block align-text-top">
+            登入
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+      
+      <form class="d-flex" action="{{ url_for('main.search') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name = 'search'>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>

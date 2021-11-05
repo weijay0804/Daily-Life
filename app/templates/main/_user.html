@@ -19,6 +19,13 @@
             </div>
             {% endif %}
             <div class="user-footer">
+                {% if current_user.can(Permission.ADMIN) %} 
+                <div class="gap-3 d-flex justify-content-md-end">
+                    <a href="{{ url_for('main.edit_profile_admin', id = user.id) }}">
+                        <span class="badge rounded-pill bg-warning text-dark">Edit [ADMIN]</span>
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
       </li>
