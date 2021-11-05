@@ -353,9 +353,10 @@ def search():
         search_date = request.form.get('search')
         if not search_date:
             return redirect(url_for('main.index'))
-        posts = Post.query.join(User, User.id == Post.author_id).filter(User.username.like(f'%{search_date.lower()}%')).filter(Post.is_private == False).order_by(Post.timestamp.desc()).all()
+        
+        users = User.query.filter(User.username.like(f'%{search_date.lower()}%')).order_by(User.username).all()
 
-        return render_template('main/search.html', posts = posts)
+        return render_template('main/search.html', users = users)
 
     
 @main.route('/test')

@@ -1,0 +1,26 @@
+<ul class="users">
+    {% for user in users %} 
+      <li class="user">
+        <div class="profile-thumbnail">
+          <a href="{{ url_for('main.user', username = user.username) }}">
+            <img class="img-rounded profile-thumbnail rounded-circle" src="{{ user.gravatar(size=40) }}">
+          </a>
+        </div>
+        <div class="user-content">
+            <div class="user-date">{{ moment(user.member_since).format('YYYY-MM-DD') }} 加入</div>  
+            <div class="username">
+                <a href="{{ url_for('main.user', username=user.username) }}">
+                {{ user.username }}
+                </a>
+            </div>
+            {% if user.location %}
+            <div class="user-body">
+                來自 <a href="http://maps.google.com/?q={{ user.location }}" target="_blank"> {{ user.location }}</a>
+            </div>
+            {% endif %}
+            <div class="user-footer">
+            </div>
+        </div>
+      </li>
+    {% endfor %}
+</ul>

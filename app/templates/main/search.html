@@ -2,20 +2,20 @@
 
 {% block head %} 
     {{ super() }}
-    <link href="{{ url_for('static', filename = 'css/post.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename = 'css/users.css') }}" rel="stylesheet">
 {% endblock %}
 {% block page_content %} 
   <div class="page-header">
     <h1>搜尋結果</h1>
   </div>
   <div class="page">
-    <div class="posts-content">
-        {% if posts %}
-            {% include 'main/_post.html' %}
-        {% else %} 
-            <h2>沒有找到符合的結果</h2>
-        {% endif %}
-    </div>
+    <div class="users-content">
+      {% if users %} 
+        {% include 'main/_user.html' %} 
+      {% else %} 
+        <h2> 沒有符合的結果 </h2>
+      {% endif %}
+      </div>
   </div>
   
 {% endblock %}
